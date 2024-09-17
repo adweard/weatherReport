@@ -31,7 +31,7 @@ export default class historyHelper{
     }
 
   }
-  static async getHistory(){
+  static async getHistory():Promise<Array<string>>{
     const cityCodeArray:Array<string>=[]
     if(historyHelper.queue.size()==0){
       return cityCodeArray
@@ -83,5 +83,4 @@ export default class historyHelper{
     historyHelper.InitQueue()
 
   }
-
 }

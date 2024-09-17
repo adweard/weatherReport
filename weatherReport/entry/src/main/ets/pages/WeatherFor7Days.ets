@@ -171,102 +171,102 @@ struct Index {
     })
   }
   refresh(){
-    this.check=false
-    console.info(this.location+'现在的地址！')
-    getWeatherResult(CommonConstants.url, this.location).then((serverData) => {
-      this.weatherData = serverData.now
-      this.obsTime = this.weatherData.obsTime
-      this.temp = this.weatherData.temp
-      this.text = this.weatherData.text
-      this.windDir = this.weatherData.windDir
-      this.windScale = this.weatherData.windScale
-      this.humidity = this.weatherData.humidity
-      this.pressure = this.weatherData.pressure
-      this.publish=this.matchTime(this.obsTime)
-    }).then(()=>{
-      getWeatherResult7(this.location).then((serverData) => {
-        this.weatherLongData = serverData.daily
-        for(let i=0;i<this.weatherLongData.length;i++){
-          this.fxDateArray[i]=this.weatherLongData[i].fxDate
-          this.moonrise[i]=this.weatherLongData[i].moonrise
-          this.moonset[i]=this.weatherLongData[i].moonset
-          this.moonPhase[i]=this.weatherLongData[i].moonPhase
-          this.moonPhaseIcon[i]=this.weatherLongData[i].moonPhaseIcon
-          this.tempMinArray[i]=this.weatherLongData[i].tempMin
-          this.tempMaxArray[i]=this.weatherLongData[i].tempMax
-          this.textDayArray[i]=this.weatherLongData[i].textDay
-        }
-        this.min(this.tempMinArray)
-        this.max(this.tempMaxArray)
-        this.check=true
+      this.check=false
+      console.info(this.location+'现在的地址！')
+      getWeatherResult(CommonConstants.url, this.location).then((serverData) => {
+        this.weatherData = serverData.now
+        this.obsTime = this.weatherData.obsTime
+        this.temp = this.weatherData.temp
+        this.text = this.weatherData.text
+        this.windDir = this.weatherData.windDir
+        this.windScale = this.weatherData.windScale
+        this.humidity = this.weatherData.humidity
+        this.pressure = this.weatherData.pressure
+        this.publish=this.matchTime(this.obsTime)
       }).then(()=>{
-        getCityLocation(this.location).then(serverData=>{
-          this.locationData=serverData.location
-          this.adm2=this.locationData[0].adm2
-          this.adm1=this.locationData[0].adm1
-        })
-        historyHelper.addHistory(this.searchText).then(async ()=>{
-          this.getHistory().then(async ()=>{
-            this.weatherCardArray=[]
-            for (let i = 0; i < this.cityCode.length; i++) {
-              console.info('weatherCardArray被初始化了!!! ' + this.cityCode[i]);
+        getWeatherResult7(this.location).then((serverData) => {
+          this.weatherLongData = serverData.daily
+          for(let i=0;i<this.weatherLongData.length;i++){
+            this.fxDateArray[i]=this.weatherLongData[i].fxDate
+            this.moonrise[i]=this.weatherLongData[i].moonrise
+            this.moonset[i]=this.weatherLongData[i].moonset
+            this.moonPhase[i]=this.weatherLongData[i].moonPhase
+            this.moonPhaseIcon[i]=this.weatherLongData[i].moonPhaseIcon
+            this.tempMinArray[i]=this.weatherLongData[i].tempMin
+            this.tempMaxArray[i]=this.weatherLongData[i].tempMax
+            this.textDayArray[i]=this.weatherLongData[i].textDay
+          }
+          this.min(this.tempMinArray)
+          this.max(this.tempMaxArray)
+          this.check=true
+        }).then(()=>{
+          getCityLocation(this.location).then(serverData=>{
+            this.locationData=serverData.location
+            this.adm2=this.locationData[0].adm2
+            this.adm1=this.locationData[0].adm1
+          })
+          historyHelper.addHistory(this.searchText).then(async ()=>{
+            this.getHistory().then(async ()=>{
+              this.weatherCardArray=[]
+              for (let i = 0; i < this.cityCode.length; i++) {
+                console.info('weatherCardArray被初始化了!!! ' + this.cityCode[i]);
 
-              try {
-                const nowWeather = await getWeatherResult(CommonConstants.url, this.cityCode[i]);
-                let text = nowWeather.now.text;
-                let temp = nowWeather.now.temp;
+                try {
+                  const nowWeather = await getWeatherResult(CommonConstants.url, this.cityCode[i]);
+                  let text = nowWeather.now.text;
+                  let temp = nowWeather.now.temp;
 
-                const dailyWeather = await getWeatherResult7(this.cityCode[i]);
-                let tempMax = dailyWeather.daily[i].tempMax
-                let tempMin = dailyWeather.daily[i].tempMin
+                  const dailyWeather = await getWeatherResult7(this.cityCode[i]);
+                  let tempMax = dailyWeather.daily[i].tempMax
+                  let tempMin = dailyWeather.daily[i].tempMin
 
-                const locationData = await getCityLocation(this.cityCode[i]);
-                let adm2 = locationData.location[0].adm2;
-                let adm1 = locationData.location[0].adm1;
-                let cityCode = locationData.location[0].id;
-                this.weatherCardArray.push({text,temp,tempMax,tempMin,adm2,adm1,cityCode })
+                  const locationData = await getCityLocation(this.cityCode[i]);
+                  let adm2 = locationData.location[0].adm2;
+                  let adm1 = locationData.location[0].adm1;
+                  let cityCode = locationData.location[0].id;
+                  this.weatherCardArray.push({text,temp,tempMax,tempMin,adm2,adm1,cityCode })
 
-                console.info('我被初始化了！ ' + this.weatherCardArray[i].text);
-                this.isRefreshing = false
-              } catch (error) {
-                console.error('Error updating weather card:', error);
+                  console.info('我被初始化了！ ' + this.weatherCardArray[i].text);
+                  this.isRefreshing = false
+                } catch (error) {
+                  console.error('Error updating weather card:', error);
+                }
               }
-            }
+
+            })
 
           })
 
         })
+      })
+
+      getHourResult(this.location).then((serverData)=>{
+        this.hourData = serverData.hourly
+        for(let i=0;i<this.hourData.length;i++){
+          this.hourFxTimeArray[i]=this.hourData[i].fxTime
+          this.hourTempArray[i]=this.hourData[i].temp
+          this.hourIconArray[i]=this.hourData[i].icon
+          this.hourTextArray[i]=this.hourData[i].text
+        }
+      })
+
+
+      getIndicesResult(this.location).then((serverData) => {
+        this.indicesData = serverData.daily
+        for(let i=0;i<this.indicesData.length;i++){
+          this.indicesName[i]= this.indicesData[i].name
+          this.indicesLevel[i] = this.indicesData[i].level
+          this.indicesCate[i] = this.indicesData[i].category
+          this.indicesType[i] = this.indicesData[i].type
+          this.indicesText[i] = this.indicesData[i].text
+        }
 
       })
-    })
-
-    getHourResult(this.location).then((serverData)=>{
-      this.hourData = serverData.hourly
-      for(let i=0;i<this.hourData.length;i++){
-        this.hourFxTimeArray[i]=this.hourData[i].fxTime
-        this.hourTempArray[i]=this.hourData[i].temp
-        this.hourIconArray[i]=this.hourData[i].icon
-        this.hourTextArray[i]=this.hourData[i].text
-      }
-    })
-
-
-    getIndicesResult(this.location).then((serverData) => {
-      this.indicesData = serverData.daily
-      for(let i=0;i<this.indicesData.length;i++){
-        this.indicesName[i]= this.indicesData[i].name
-        this.indicesLevel[i] = this.indicesData[i].level
-        this.indicesCate[i] = this.indicesData[i].category
-        this.indicesType[i] = this.indicesData[i].type
-        this.indicesText[i] = this.indicesData[i].text
-      }
-
-    })
-    getAirResult(this.location).then((serverData) => {
-      this.airData = serverData.now
-      this.category = this.airData.category
-      this.pm2p5 = this.airData.pm2p5
-    })
+      getAirResult(this.location).then((serverData) => {
+        this.airData = serverData.now
+        this.category = this.airData.category
+        this.pm2p5 = this.airData.pm2p5
+      })
 
 
   }
@@ -798,18 +798,18 @@ struct Index {
         .height(690)
         .width('90%')
         .scrollBar(BarState.Off)
-      }
-      .onRefreshing(()=>{
-        getLocation().then((locData) => {
-          if(`${locData.longitude},${locData.latitude}`==this.location){
-            this.isRefreshing=false
-          }
-          else{
-            this.location = `${locData.longitude},${locData.latitude}`
-            this.refresh()
-          }
-        })
+    }
+    .onRefreshing(()=>{
+      getLocation().then((locData) => {
+        if(`${locData.longitude},${locData.latitude}`==this.location){
+          this.isRefreshing=false
+        }
+        else{
+          this.location = `${locData.longitude},${locData.latitude}`
+          this.refresh()
+        }
       })
+    })
 
       Row(){
         Image($r('app.media.more'))
